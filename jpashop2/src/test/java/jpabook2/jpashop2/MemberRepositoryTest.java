@@ -22,28 +22,28 @@ import static org.junit.jupiter.api.Assertions.*;
 class MemberRepositoryTest {
 
     //테스트이므로 필드 주입을 써도됨
-    @Autowired MemberRepository memberRepository;
-
-    //트랜잭션은 스프링꺼 쓰는게 좋음(안에 쓸수 있는 기능이 많음)
-    @DisplayName("멤버 테스트")
-    @Test
-    @Transactional //이게 테스트에 있으면, 테스트가 끝나고 롤백함(그래야 다음테스트도 할 수 있음)
-    @Rollback(false)//이 어노테이션 주면, 롤백안하고 커밋함.
-    public void testMember() throws Exception{
-        //give
-        Member member = new Member();
-        member.setUsername("memberA");
-
-        //when
-        Long saveId = memberRepository.save(member);
-        Member findMember = memberRepository.find(saveId);
-
-        //then
-
-        Assertions.assertThat(findMember.getId()).isEqualTo(member.getId());
-        Assertions.assertThat(findMember.getUsername()).isEqualTo(member.getUsername());
-        Assertions.assertThat(findMember).isEqualTo(member);//같은 트랜잭션안에서,동작하기 때문, 같은 영속성 컨텍스트 안에서는 같은 객체로 관리되는 것을 보증
-
-    }
+//    @Autowired MemberRepository memberRepository;
+//
+//    //트랜잭션은 스프링꺼 쓰는게 좋음(안에 쓸수 있는 기능이 많음)
+//    @DisplayName("멤버 테스트")
+//    @Test
+//    @Transactional //이게 테스트에 있으면, 테스트가 끝나고 롤백함(그래야 다음테스트도 할 수 있음)
+//    @Rollback(false)//이 어노테이션 주면, 롤백안하고 커밋함.
+//    public void testMember() throws Exception{
+//        //give
+//        Member member = new Member();
+//        member.setUsername("memberA");
+//
+//        //when
+//        Long saveId = memberRepository.save(member);
+//        Member findMember = memberRepository.find(saveId);
+//
+//        //then
+//
+//        Assertions.assertThat(findMember.getId()).isEqualTo(member.getId());
+//        Assertions.assertThat(findMember.getUsername()).isEqualTo(member.getUsername());
+//        Assertions.assertThat(findMember).isEqualTo(member);//같은 트랜잭션안에서,동작하기 때문, 같은 영속성 컨텍스트 안에서는 같은 객체로 관리되는 것을 보증
+//
+//    }
 
 }
