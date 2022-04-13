@@ -57,7 +57,13 @@ class MemberServiceTest {
         //then
         //예외가 터져야됨
         //junit5에서는 이와같이 예외가 터지는 테스트의 경우, 람다를 이용한다.
-        Assertions.assertThrows(IllegalStateException.class, () -> {memberService.join(member2);});
+        //Throwable은 예외를 처리하기 위한 최상위 클래스이다.(약간 자바에서 클래스타입을 잘 모르면 무지성 Object해도 되는것과 비슷)
+        Throwable errorMessage = assertThrows(IllegalStateException.class, () -> {
+            memberService.join(member2);
+        });
+
+        //예외시 발생하는 메시지도 맞는지 확인
+        Assertions.assertEquals("이미 존재하는 회원입니다",errorMessage.getMessage());
     }
 
 }
