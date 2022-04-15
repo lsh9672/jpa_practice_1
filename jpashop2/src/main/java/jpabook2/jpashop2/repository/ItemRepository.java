@@ -23,6 +23,7 @@ public class ItemRepository {
         if(item.getId() == null){
             em.persist(item);
         }
+        //편하지만, 단순한 경우에만 적용가능하고, 웬만하면 변경감지를 사용할 것
         else{
             //업데이트라고 생각
             em.merge(item);
