@@ -2,6 +2,7 @@ package jpabook2.jpashop2.repository;
 
 import jpabook2.jpashop2.domain.Member;
 import jpabook2.jpashop2.domain.Order;
+import jpabook2.jpashop2.repository.order.simplequery.OrderSimpleQueryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -103,4 +104,31 @@ public class OrderRepository {
 //    public List<Order> findAll(OrderSearch orderSearch){
 //
 //    }
+
+    /**
+     * Order를 조회한다는 것을 건들지 않고 내부에서 쿼리만 바꿔서 최적화
+     * 따라서 재사용성이 좋음 - Order를 가져왔기 때문에 원하는 DTO로 만들서 사용할수 있음
+     */
+    public List<Order> findAllWithMemberDelivery(){
+        return em.createQuery("select o from Order o" +
+                " join fetch o.member m" +
+                " join fetch o.delivery d", Order.class)
+                .getResultList();
+    }
+
+    /**
+     * 엔티티의 모든 값을 가져오는것이 아닌 필요한 것만 Select 했지만,
+     * 외부에서 봤을떄 Order를 조회하는 것이 아닌 DTO를 만들어서 그것을 조회하는 것이므로, 재사용성이 좋지 않음
+     * 코드가 지저분하고 엔티티로 조회한것이 아니라 set으로 더티체킹을 못함.
+     * 좋아보이지만 별로임(API 스펙이 바뀌면 이 레파지토리 계층을 뜯어 고쳐야됨)'택
+     * 이게 성능이 더 좋을 것 같지만, 결국 성능은 join부분이므로 위에꺼가 더 나은 선
+     */
+    public List<OrderSimpleQueryDto> findOrderDtos() {
+        return em.createQuery(
+                "select new jpabook2.jpashop2.repository.OrderSimpleQueryDto(o.id, m.name ,o.orderDate,o.status, d.address) from Order o" +
+                " join o.member m" +
+                " join o.delivery d", OrderSimpleQueryDto.class)
+                .getResultList();
+    }
+
 }
