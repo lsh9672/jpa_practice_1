@@ -110,9 +110,20 @@ public class OrderRepository {
      * 따라서 재사용성이 좋음 - Order를 가져왔기 때문에 원하는 DTO로 만들서 사용할수 있음
      */
     public List<Order> findAllWithMemberDelivery(){
-        return em.createQuery("select o from Order o" +
+        return em.createQuery(
+                "select o from Order o" +
                 " join fetch o.member m" +
                 " join fetch o.delivery d", Order.class)
+                .getResultList();
+    }
+
+    public List<Order> findAllWithMemberDelivery(int offset,int limit){
+        return em.createQuery(
+                        "select o from Order o" +
+                                " join fetch o.member m" +
+                                " join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
                 .getResultList();
     }
 
@@ -123,12 +134,28 @@ public class OrderRepository {
      * 좋아보이지만 별로임(API 스펙이 바뀌면 이 레파지토리 계층을 뜯어 고쳐야됨)'택
      * 이게 성능이 더 좋을 것 같지만, 결국 성능은 join부분이므로 위에꺼가 더 나은 선
      */
-    public List<OrderSimpleQueryDto> findOrderDtos() {
+//    public List<OrderSimpleQueryDto> findOrderDtos() {
+//        return em.createQuery(
+//                "select new jpabook2.jpashop2.repository.OrderSimpleQueryDto(o.id, m.name ,o.orderDate,o.status, d.address) from Order o" +
+//                " join o.member m" +
+//                " join o.delivery d", OrderSimpleQueryDto.class)
+//                .getResultList();
+//    }
+
+    /**
+     * 그냥 페치조인을 하면 중복되는 값이 계속발생함
+     * 따라서 distint를 붙여줘야됨
+     * JPQL의 distinct는 해당 객체(아래에서 Order)를 가져올떄 중복이 되면, 제거
+     * 1. 디비에 distinct키워드 날려주고,
+     * 2. 엔티티가 중복이면, 중복을 걸러서 컬렉션에 담아줌(아래에서 Order의 중복을 제거함.)
+     */
+    public List<Order> findAllWithItem() {
         return em.createQuery(
-                "select new jpabook2.jpashop2.repository.OrderSimpleQueryDto(o.id, m.name ,o.orderDate,o.status, d.address) from Order o" +
-                " join o.member m" +
-                " join o.delivery d", OrderSimpleQueryDto.class)
+                "select distinct o from Order o" +
+                " join fetch o.member m" +
+                " join fetch o.delivery d" +
+                " join fetch o.orderItems oi" +
+                " join fetch oi.item i",Order.class)
                 .getResultList();
     }
-
 }
