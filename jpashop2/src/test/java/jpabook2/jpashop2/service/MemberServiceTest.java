@@ -1,18 +1,15 @@
 package jpabook2.jpashop2.service;
 
 import jpabook2.jpashop2.domain.Member;
-import jpabook2.jpashop2.repository.MemberRepository;
+import jpabook2.jpashop2.repository.MemberRepositoryOld;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.security.RunAs;
 
 import static org.junit.jupiter.api.Assertions.*;
 //통합테스트
@@ -24,7 +21,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class MemberServiceTest {
 
     @Autowired MemberService memberService;
-    @Autowired MemberRepository memberRepository;
+    @Autowired
+    MemberRepositoryOld memberRepository;
 
     @DisplayName("회원가입")
     @Test

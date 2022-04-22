@@ -1,6 +1,8 @@
 package jpabook2.jpashop2.repository;
 
-import jpabook2.jpashop2.domain.Member;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jpabook2.jpashop2.domain.*;
 import jpabook2.jpashop2.domain.Order;
 import jpabook2.jpashop2.repository.order.simplequery.OrderSimpleQueryDto;
 import lombok.RequiredArgsConstructor;
@@ -101,6 +103,39 @@ public class OrderRepository {
         return query.getResultList();
     }
 
+    /**
+     * QueryDSL로 복잡한 동적쿼리 해결
+     */
+    public List<Order> findAll(OrderSearch orderSearch){
+
+        QOrder order = QOrder.order;
+        QMember member = QMember.member;
+
+        JPAQueryFactory query = new JPAQueryFactory(em);
+
+        return query
+                .select(order)
+                .from(order)
+                .join(order.member,member)
+                .where(statusEq(orderSearch.getOrderStatus()),nameLike(orderSearch.getMemberName()))
+                .limit(1000)
+                .fetch();
+    }
+
+    private BooleanExpression nameLike(String memberName){
+        if(!StringUtils.hasText(memberName)){
+            return null;
+        }
+        return QMember.member.name.like(memberName);
+    }
+
+    private BooleanExpression statusEq(OrderStatus statusCond){
+        if(statusCond == null){
+            return null;
+        }
+        return QOrder.order.status.eq(statusCond);
+    }
+
 //    public List<Order> findAll(OrderSearch orderSearch){
 //
 //    }
@@ -132,7 +167,7 @@ public class OrderRepository {
      * 외부에서 봤을떄 Order를 조회하는 것이 아닌 DTO를 만들어서 그것을 조회하는 것이므로, 재사용성이 좋지 않음
      * 코드가 지저분하고 엔티티로 조회한것이 아니라 set으로 더티체킹을 못함.
      * 좋아보이지만 별로임(API 스펙이 바뀌면 이 레파지토리 계층을 뜯어 고쳐야됨)'택
-     * 이게 성능이 더 좋을 것 같지만, 결국 성능은 join부분이므로 위에꺼가 더 나은 선
+     * 이게 성능이 더 좋을 것 같지만, 결국 성능은 join부분이므로 위에꺼가 더 나은 선택
      */
 //    public List<OrderSimpleQueryDto> findOrderDtos() {
 //        return em.createQuery(

@@ -2,9 +2,8 @@ package jpabook2.jpashop2.service;
 
 import jpabook2.jpashop2.domain.Member;
 import jpabook2.jpashop2.repository.MemberRepository;
-import lombok.AllArgsConstructor;
+import jpabook2.jpashop2.repository.MemberRepositoryOld;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,16 +56,20 @@ public class MemberService {
      * 회원 단건 조회
      */
 
-    public Member findOne(Long memberId){
-        return memberRepository.findOne(memberId);
-    }
+//    public Member findOne(Long memberId){
+//        return memberRepository.findOne(memberId);
+//    }
 
+    //스프링 데이터 JPA  사용
+    public Member findOne(Long memberId){
+        return memberRepository.findById(memberId).get();
+    }
     /**
      * 회원 정보 수정
      */
     @Transactional
     public void update(Long id, String name){
-        Member member = memberRepository.findOne(id);
+        Member member = memberRepository.findById(id).get();
         member.setName(name);
 
     }
